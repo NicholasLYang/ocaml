@@ -350,9 +350,54 @@ command line, and possibly the "-custom" option.
 
 \end{options}
 
-\section{s:comp-warnings}{Warning reference}
+\section{s:comp-warnings}{Warnings}
 
-This section describes and explains in detail some warnings:
+\subsection{ss:warn-overview}{Overview}
+
+The OCaml compiler can emit warnings for code that compiles
+but has potential issues. For example, if a pattern match
+does not handle all cases, "ocamlc" will emit a warning:
+
+\begin{verbatim}
+  let head (hd :: rest) = hd
+  
+  > let head (hd :: rest) = hd
+            ^^^^^^^^^^^^
+  > Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+  > Here is an example of a case that is not matched:
+  > []
+\end{verbatim}
+
+In this case, while the code does compile, it will produce a runtime error when
+an empty list is passed:
+
+\begin{verbatim}
+  head []
+  > Fatal error: exception Match_failure
+\end{verbatim}
+
+By producing a warning, "ocamlc" can inform the user of this issue at compile time.
+
+\subsection{ss:warn-configuring}{Configuring}
+
+Warnings can be configured by using the "-w" flag (see
+the "-w" entry under \ref{s:comp-options} for more details):
+
+\begin{verbatim}
+  ocamlc -w -unused-value-declaration main.ml
+\end{verbatim}
+
+Or by adding the "warning" attribute to the relevant code:
+
+\begin{verbatim}
+  [@@@warning "-unused-value-declaration"]
+    let x = 0
+\end{verbatim}
+
+In either case, the warning name can either be the warning number ("8")
+ or the warning name written in skeleton-case ("partial-match"). \\
+
+The following subsections describe and explain in detail some warnings:
 
 \subsection{ss:warn6}{Warning 6: Label omitted in function application}
 
